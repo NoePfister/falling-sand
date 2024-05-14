@@ -12,6 +12,8 @@ class Game:
         self.cell_count_width = cell_dimensions[0]
         self.cell_count_height = cell_dimensions[1]
 
+        self.cells = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
+        self.cells[7][10] = 1
 
         self.setup()
         self.loop()
@@ -34,6 +36,7 @@ class Game:
 
             if keys[pg.K_ESCAPE]: self.quit()
 
+            self.draw_sand()
             self.draw_grid()
 
             pg.display.update()
@@ -45,6 +48,15 @@ class Game:
 
         for y in range(self.cell_count_height):
             pg.draw.rect(self.screen,(222,222,222),(0,y*self.cell_height,self.screen_width,self.screen_height/300))
+
+    def draw_sand(self):
+        for x in range(self.cell_count_width):
+            for y in range(self.cell_count_height):
+                # print(self.cells[x][y])
+                if self.cells[x][y]:
+                    pg.draw.rect(self.screen,(111,111,111),(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
+                else:
+                    pg.draw.rect(self.screen,(0,0,0),(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
 
     def quit(self):
         exit(0)
