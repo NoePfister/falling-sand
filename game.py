@@ -1,8 +1,10 @@
 import pygame as pg
+import random
+import os
 
 
 class Game:
-    def __init__(self,screen_dimensions,cell_dimensions):
+    def __init__(self,screen_dimensions,cell_dimensions, fps):
         self.screen_width = screen_dimensions[0]
         self.screen_height = screen_dimensions[1]
 
@@ -12,8 +14,14 @@ class Game:
         self.cell_count_width = cell_dimensions[0]
         self.cell_count_height = cell_dimensions[1]
 
+        self.fps = fps
+        self.clock = pg.time.Clock()
+
         self.cells = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
-        self.cells[7][10] = 1
+        self.cells[7][3] = 1
+        self.cells[0][0] = 1
+        self.cells[0][9] = 1
+        self.cells[7][5] = 1
 
         self.setup()
         self.loop()
@@ -28,9 +36,18 @@ class Game:
     def loop(self):
         while True:
 
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.quit()
+                # if event.type == pg.MOUSEBUTTONDOWN:
+                #     self.spawn_at_mouse()
+
+            if pg.mouse.get_pressed()[0]:
+                self.spawn_at_mouse()
+            # self.wait_for_n()
+
+            # os.system("cls")
 
             keys = pg.key.get_pressed()
 
@@ -38,9 +55,23 @@ class Game:
 
             self.update_sand()
             self.draw_sand()
-            self.draw_grid()
+            # self.draw_grid()
 
             pg.display.update()
+
+            self.clock.tick(self.fps)
+
+    def wait_for_n(self):
+        waiting = True
+        while waiting:
+            for event in pg.event.get():
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_n:
+                        waiting = False
+                    if event.key == pg.K_ESCAPE:
+                        self.quit()
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    self.spawn_at_mouse()
 
     def draw_grid(self):
         for x in range(self.cell_count_width):
@@ -65,15 +96,59 @@ class Game:
         for x in range(self.cell_count_width):
             for y in range(self.cell_count_height):
                 # continue if cell is 0
-                if not self.cells[x][y]: continue
+                if self.cells[x][y] == 0:
+                    # print("0")
+                    continue
                 # continue if cell is at floor
-                if y == self.cell_count_height-1: continue
-                if not self.cells[x][y+1]:
+                if y == self.cell_count_height-1:
+                    cells_new[x][y] = 1
+                    # print("floor")
+                    continue
+                # check if celll under the cell is free
+                if self.cells[x][y+1] == 0:
                     cells_new[x][y+1] = 1 
-                    print(x,y)
+                    # print("Free")
+                    # print(x,y)
+                else:
+                    # Check if it can go right or left
 
+                    # If cell is at the edge, force it in one direction
+                    if x == 0 and self.cells[x+1][y+1] == 0:
+                        cells_new[x+1][y+1] = 1
+                        continue
+                    elif x == self.cell_count_width-1 and self.cells[x-1][y+1] == 0:
+                        cells_new[x-1][y+1] = 1
+                        continue
+                    elif x == 0 or x == self.cell_count_width-1:
+                        cells_new[x][y] = 1
+                        continue
+
+                    a = random.randint(1,2)
+                    if a == 2: a = -1
+                    # Right:
+                    if self.cells[x+a][y+1] == 0:
+                        cells_new[x+a][y+1] =1
+                        continue
+                    # Left
+                    if self.cells[x+a][y+1] == 0:
+                        cells_new[x+a][y+1] = 1
+                        continue
+                    # Else leave the cell
+                    cells_new[x][y] = 1
+
+                    # print(cells_new)
         self.cells = cells_new
                     
+    def spawn_at_mouse(self):
+        pos = pg.mouse.get_pos()
+
+        cell_pos = [0,0]
+
+        cell_pos[0] = int(pos[0]//self.cell_width)
+        cell_pos[1] = int(pos[1]//self.cell_height)
+        print(cell_pos)
+
+        self.cells[cell_pos[0]][cell_pos[1]] = 1
 
     def quit(self):
         exit(0)
