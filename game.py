@@ -52,6 +52,7 @@ class Game:
             keys = pg.key.get_pressed()
 
             if keys[pg.K_ESCAPE]: self.quit()
+            if keys[pg.K_r]: self.cells = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
 
             self.update_sand()
             self.draw_sand()
@@ -146,7 +147,7 @@ class Game:
 
         cell_pos[0] = int(pos[0]//self.cell_width)
         cell_pos[1] = int(pos[1]//self.cell_height)
-        print(cell_pos)
+        # print(cell_pos)
 
         self.cells[cell_pos[0]][cell_pos[1]] = 1
 
