@@ -36,6 +36,7 @@ class Game:
 
             if keys[pg.K_ESCAPE]: self.quit()
 
+            self.update_sand()
             self.draw_sand()
             self.draw_grid()
 
@@ -57,6 +58,22 @@ class Game:
                     pg.draw.rect(self.screen,(111,111,111),(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
                 else:
                     pg.draw.rect(self.screen,(0,0,0),(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
+
+    def update_sand(self):
+        cells_new = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
+
+        for x in range(self.cell_count_width):
+            for y in range(self.cell_count_height):
+                # continue if cell is 0
+                if not self.cells[x][y]: continue
+                # continue if cell is at floor
+                if y == self.cell_count_height-1: continue
+                if not self.cells[x][y+1]:
+                    cells_new[x][y+1] = 1 
+                    print(x,y)
+
+        self.cells = cells_new
+                    
 
     def quit(self):
         exit(0)
