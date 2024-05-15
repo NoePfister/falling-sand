@@ -1,4 +1,6 @@
 import pygame as pg
+from enums import Types
+from cell import Cell
 import random
 import os
 
@@ -17,11 +19,8 @@ class Game:
         self.fps = fps
         self.clock = pg.time.Clock()
 
-        self.cells = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
-        self.cells[7][3] = 1
-        self.cells[0][0] = 1
-        self.cells[0][9] = 1
-        self.cells[7][5] = 1
+        self.cells = [[Cell() for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
+        # print(self.cells)
 
         self.setup()
         self.loop()
@@ -52,7 +51,7 @@ class Game:
             keys = pg.key.get_pressed()
 
             if keys[pg.K_ESCAPE]: self.quit()
-            if keys[pg.K_r]: self.cells = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
+            if keys[pg.K_r]: self.cells = [[Cell() for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
 
             self.update_sand()
             self.draw_sand()
@@ -86,56 +85,58 @@ class Game:
         for x in range(self.cell_count_width):
             for y in range(self.cell_count_height):
                 # print(self.cells[x][y])
-                if self.cells[x][y]:
-                    pg.draw.rect(self.screen,(111,111,111),(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
+                # print(x,y)
+                color = self.cells[x][y].color
+                if self.cells[x][y].type == Types.CELL:
+                    pg.draw.rect(self.screen,color,(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
                 else:
                     pg.draw.rect(self.screen,(0,0,0),(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
 
     def update_sand(self):
-        cells_new = [[0 for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
+        cells_new = [[Cell() for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
 
         for x in range(self.cell_count_width):
             for y in range(self.cell_count_height):
                 # continue if cell is 0
-                if self.cells[x][y] == 0:
+                if self.cells[x][y].type == Types.EMPTY_CELL:
                     # print("0")
                     continue
                 # continue if cell is at floor
                 if y == self.cell_count_height-1:
-                    cells_new[x][y] = 1
+                    cells_new[x][y] = Cell((222,222,222),Types.CELL)
                     # print("floor")
                     continue
                 # check if celll under the cell is free
-                if self.cells[x][y+1] == 0:
-                    cells_new[x][y+1] = 1 
+                if self.cells[x][y+1].type == Types.EMPTY_CELL:
+                    cells_new[x][y+1] = Cell((222,222,222),Types.CELL) 
                     # print("Free")
                     # print(x,y)
                 else:
                     # Check if it can go right or left
 
                     # If cell is at the edge, force it in one direction
-                    if x == 0 and self.cells[x+1][y+1] == 0:
-                        cells_new[x+1][y+1] = 1
+                    if x == 0 and self.cells[x+1][y+1].type == Types.EMPTY_CELL:
+                        cells_new[x+1][y+1] = Cell((222,222,222),Types.CELL)
                         continue
-                    elif x == self.cell_count_width-1 and self.cells[x-1][y+1] == 0:
-                        cells_new[x-1][y+1] = 1
+                    elif x == self.cell_count_width-1 and self.cells[x-1][y+1].type == Types.EMPTY_CELL:
+                        cells_new[x-1][y+1] = Cell((222,222,222),Types.CELL)
                         continue
                     elif x == 0 or x == self.cell_count_width-1:
-                        cells_new[x][y] = 1
+                        cells_new[x][y] = Cell((222,222,222),Types.CELL)
                         continue
 
                     a = random.randint(1,2)
                     if a == 2: a = -1
                     # Right:
-                    if self.cells[x+a][y+1] == 0:
-                        cells_new[x+a][y+1] =1
+                    if self.cells[x+a][y+1].type == Types.EMPTY_CELL:
+                        cells_new[x+a][y+1] =Cell((222,222,222),Types.CELL)
                         continue
                     # Left
-                    if self.cells[x+a][y+1] == 0:
-                        cells_new[x+a][y+1] = 1
+                    if self.cells[x+a][y+1].type == Types.EMPTY_CELL:
+                        cells_new[x+a][y+1] = Cell((222,222,222),Types.CELL)
                         continue
                     # Else leave the cell
-                    cells_new[x][y] = 1
+                    cells_new[x][y] = Cell((222,222,222),Types.CELL)
 
                     # print(cells_new)
         self.cells = cells_new
@@ -149,7 +150,7 @@ class Game:
         cell_pos[1] = int(pos[1]//self.cell_height)
         # print(cell_pos)
 
-        self.cells[cell_pos[0]][cell_pos[1]] = 1
+        self.cells[cell_pos[0]][cell_pos[1]] = Cell((222,222,222),Types.CELL)
 
     def quit(self):
         exit(0)
