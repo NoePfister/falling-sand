@@ -1,7 +1,7 @@
-from enums import Types
+from enums import Types, Colors
 from dataclasses import dataclass
 
 @dataclass
 class Cell:
-    color: (int,int,int) = (0,0,0)
+    color: Colors = Colors.BLACK
     type: Types = Types.EMPTY_CELL

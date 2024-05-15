@@ -1,5 +1,5 @@
 import pygame as pg
-from enums import Types
+from enums import Types, Colors
 from cell import Cell
 import random
 import os
@@ -18,6 +18,8 @@ class Game:
 
         self.fps = fps
         self.clock = pg.time.Clock()
+
+        self.color = Colors.RED
 
         self.cells = [[Cell() for x in range(self.cell_count_width)]for y in range(self.cell_count_height)]
         # print(self.cells)
@@ -75,18 +77,18 @@ class Game:
 
     def draw_grid(self):
         for x in range(self.cell_count_width):
-            pg.draw.rect(self.screen,(222,222,222),(x*self.cell_width,0,self.screen_width/300,self.screen_height))
+            pg.draw.rect(self.screen,self.color,(x*self.cell_width,0,self.screen_width/300,self.screen_height))
 
 
         for y in range(self.cell_count_height):
-            pg.draw.rect(self.screen,(222,222,222),(0,y*self.cell_height,self.screen_width,self.screen_height/300))
+            pg.draw.rect(self.screen,self.color,(0,y*self.cell_height,self.screen_width,self.screen_height/300))
 
     def draw_sand(self):
         for x in range(self.cell_count_width):
             for y in range(self.cell_count_height):
                 # print(self.cells[x][y])
                 # print(x,y)
-                color = self.cells[x][y].color
+                color = self.cells[x][y].color.value
                 if self.cells[x][y].type == Types.CELL:
                     pg.draw.rect(self.screen,color,(x*self.cell_width,y*self.cell_height,self.cell_width,self.cell_height))
                 else:
@@ -103,12 +105,12 @@ class Game:
                     continue
                 # continue if cell is at floor
                 if y == self.cell_count_height-1:
-                    cells_new[x][y] = Cell((222,222,222),Types.CELL)
+                    cells_new[x][y] = Cell(self.color,Types.CELL)
                     # print("floor")
                     continue
                 # check if celll under the cell is free
                 if self.cells[x][y+1].type == Types.EMPTY_CELL:
-                    cells_new[x][y+1] = Cell((222,222,222),Types.CELL) 
+                    cells_new[x][y+1] = Cell(self.color,Types.CELL) 
                     # print("Free")
                     # print(x,y)
                 else:
@@ -116,27 +118,27 @@ class Game:
 
                     # If cell is at the edge, force it in one direction
                     if x == 0 and self.cells[x+1][y+1].type == Types.EMPTY_CELL:
-                        cells_new[x+1][y+1] = Cell((222,222,222),Types.CELL)
+                        cells_new[x+1][y+1] = Cell(self.color,Types.CELL)
                         continue
                     elif x == self.cell_count_width-1 and self.cells[x-1][y+1].type == Types.EMPTY_CELL:
-                        cells_new[x-1][y+1] = Cell((222,222,222),Types.CELL)
+                        cells_new[x-1][y+1] = Cell(self.color,Types.CELL)
                         continue
                     elif x == 0 or x == self.cell_count_width-1:
-                        cells_new[x][y] = Cell((222,222,222),Types.CELL)
+                        cells_new[x][y] = Cell(self.color,Types.CELL)
                         continue
 
                     a = random.randint(1,2)
                     if a == 2: a = -1
                     # Right:
                     if self.cells[x+a][y+1].type == Types.EMPTY_CELL:
-                        cells_new[x+a][y+1] =Cell((222,222,222),Types.CELL)
+                        cells_new[x+a][y+1] =Cell(self.color,Types.CELL)
                         continue
                     # Left
                     if self.cells[x+a][y+1].type == Types.EMPTY_CELL:
-                        cells_new[x+a][y+1] = Cell((222,222,222),Types.CELL)
+                        cells_new[x+a][y+1] = Cell(self.color,Types.CELL)
                         continue
                     # Else leave the cell
-                    cells_new[x][y] = Cell((222,222,222),Types.CELL)
+                    cells_new[x][y] = Cell(self.color,Types.CELL)
 
                     # print(cells_new)
         self.cells = cells_new
@@ -150,7 +152,7 @@ class Game:
         cell_pos[1] = int(pos[1]//self.cell_height)
         # print(cell_pos)
 
-        self.cells[cell_pos[0]][cell_pos[1]] = Cell((222,222,222),Types.CELL)
+        self.cells[cell_pos[0]][cell_pos[1]] = Cell(self.color,Types.CELL)
 
     def quit(self):
         exit(0)
