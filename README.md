@@ -5,4 +5,4 @@ Falling Sand is a satisfying sand simulator written in python with pygame. You c
 
 Tu run it, download the source code and run `main.py`
 
-PS: I spend way to much time in this repository :)
+PS: I spend way to much time in this game :)
